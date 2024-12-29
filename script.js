@@ -1,80 +1,74 @@
-const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyjdMh3kvMyJv5T0gjpgFjwLFfCK7EFBymhHSp7kUi6snw2RL_6ONGDaSEtfzhGug_E/exec";
- // Use the proxy
-
-
-document.getElementById('addItemButton').addEventListener('click', addItem);
-
-function addItem() {
-    const itemName = document.getElementById('itemName').value;
-    const advancePayment = parseFloat(document.getElementById('advancePayment').value);
-    const totalPayment = parseFloat(document.getElementById('totalPayment').value);
-
-    if (!itemName || isNaN(advancePayment) || isNaN(totalPayment)) {
-        alert('Please fill out all fields correctly.');
-        return;
-    }
-
-    const paymentLeft = totalPayment - advancePayment;
-
-    // Add the row to the table
-    const tableBody = document.querySelector('#expenseTable tbody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${itemName}</td>
-        <td>${advancePayment.toFixed(2)}</td>
-        <td>${totalPayment.toFixed(2)}</td>
-        <td>${paymentLeft.toFixed(2)}</td>
-        <td><button onclick="deleteItem(this)">Delete</button></td>
-    `;
-    tableBody.appendChild(row);
-
-    updateGrandTotal();
-
-    // Send data to Google Sheets
-    sendDataToGoogleSheet(itemName, advancePayment, totalPayment, paymentLeft);
-
-    // Clear input fields
-    document.getElementById('itemName').value = '';
-    document.getElementById('advancePayment').value = '';
-    document.getElementById('totalPayment').value = '';
-}
-
-function deleteItem(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
-    updateGrandTotal();
-}
-
-function updateGrandTotal() {
-    const rows = document.querySelectorAll('#expenseTable tbody tr');
-    let grandTotal = 0;
-
-    rows.forEach(row => {
-        const paymentLeft = parseFloat(row.cells[3].innerText);
-        grandTotal += paymentLeft;
+// Function to load data from LocalStorage
+function loadData() {
+    const savedData = JSON.parse(localStorage.getItem("weddingExpenses")) || [];
+    const tableBody = document.getElementById("expense-table-body");
+    tableBody.innerHTML = ""; // Clear existing rows
+  
+    savedData.forEach(row => {
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${row.itemName}</td>
+        <td>${row.advancePayment}</td>
+        <td>${row.totalPayment}</td>
+        <td>${row.paymentLeft}</td>
+      `;
+      tableBody.appendChild(newRow);
     });
-
-    document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
-}
-
-function sendDataToGoogleSheet(itemName, advancePayment, totalPayment, paymentLeft) {
-    fetch(googleSheetUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            itemName: itemName,
-            advancePayment: advancePayment,
-            totalPayment: totalPayment,
-            paymentLeft: paymentLeft,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "success") {
-            console.log("Data saved to Google Sheet!");
-        } else {
-            console.error("Failed to save data.");
-        }
-    })
-    .catch(error => console.error("Error:", error));
-}
+  
+    updateGrandTotal();
+  }
+  
+  // Function to add a new item
+  function addItem() {
+    const itemName = document.getElementById("item-name").value;
+    const advancePayment = parseFloat(document.getElementById("advance-payment").value);
+    const totalPayment = parseFloat(document.getElementById("total-payment").value);
+    const paymentLeft = totalPayment - advancePayment;
+  
+    if (itemName && !isNaN(advancePayment) && !isNaN(totalPayment)) {
+      // Get existing data from LocalStorage
+      const savedData = JSON.parse(localStorage.getItem("weddingExpenses")) || [];
+  
+      // Add the new item to the data array
+      savedData.push({ itemName, advancePayment, totalPayment, paymentLeft });
+  
+      // Save the updated data back to LocalStorage
+      localStorage.setItem("weddingExpenses", JSON.stringify(savedData));
+  
+      // Add the new row to the table immediately
+      const tableBody = document.getElementById("expense-table-body");
+      const newRow = document.createElement("tr");
+      newRow.innerHTML = `
+        <td>${itemName}</td>
+        <td>${advancePayment}</td>
+        <td>${totalPayment}</td>
+        <td>${paymentLeft}</td>
+      `;
+      tableBody.appendChild(newRow);
+  
+      updateGrandTotal(); // Update the grand total
+    } else {
+      alert("Please fill out all fields correctly.");
+    }
+  }
+  
+  // Function to calculate and display the grand total
+  function updateGrandTotal() {
+    const tableBody = document.getElementById("expense-table-body");
+    let totalPaymentSum = 0;
+    let advancePaymentSum = 0;
+  
+    tableBody.querySelectorAll("tr").forEach(row => {
+      const cells = row.querySelectorAll("td");
+      advancePaymentSum += parseFloat(cells[1].textContent);
+      totalPaymentSum += parseFloat(cells[2].textContent);
+    });
+  
+    const paymentLeftSum = totalPaymentSum - advancePaymentSum;
+  
+    document.getElementById("grand-total").textContent = `Advance Payment: ${advancePaymentSum}, Total Payment: ${totalPaymentSum}, Payment Left: ${paymentLeftSum}`;
+  }
+  
+  // Load data when the page loads
+  document.addEventListener("DOMContentLoaded", loadData);
+  
