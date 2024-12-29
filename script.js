@@ -1,3 +1,6 @@
+const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbxFCKVUNtw8XRC9GmbIg5ds8noNx34b36egATGIM4EOwl4rA8YMHg8F1-ZhRi1Z1vWk/exec'; // Use the proxy
+
+
 document.getElementById('addItemButton').addEventListener('click', addItem);
 
 function addItem() {
@@ -12,9 +15,9 @@ function addItem() {
 
     const paymentLeft = totalPayment - advancePayment;
 
+    // Add the row to the table
     const tableBody = document.querySelector('#expenseTable tbody');
     const row = document.createElement('tr');
-
     row.innerHTML = `
         <td>${itemName}</td>
         <td>${advancePayment.toFixed(2)}</td>
@@ -22,11 +25,14 @@ function addItem() {
         <td>${paymentLeft.toFixed(2)}</td>
         <td><button onclick="deleteItem(this)">Delete</button></td>
     `;
-
     tableBody.appendChild(row);
 
     updateGrandTotal();
 
+    // Send data to Google Sheets
+    sendDataToGoogleSheet(itemName, advancePayment, totalPayment, paymentLeft);
+
+    // Clear input fields
     document.getElementById('itemName').value = '';
     document.getElementById('advancePayment').value = '';
     document.getElementById('totalPayment').value = '';
@@ -48,4 +54,26 @@ function updateGrandTotal() {
     });
 
     document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+}
+
+function sendDataToGoogleSheet(itemName, advancePayment, totalPayment, paymentLeft) {
+    fetch(googleSheetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            itemName: itemName,
+            advancePayment: advancePayment,
+            totalPayment: totalPayment,
+            paymentLeft: paymentLeft,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            console.log("Data saved to Google Sheet!");
+        } else {
+            console.error("Failed to save data.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
 }
