@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Wedding Expense Tracker</h1>
+    <table id="expenseTable">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Advance Payment</th>
+                <th>Total Payment</th>
+                <th>Payment Left</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Grand Total</td>
+                <td id="grandTotal">0</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="form-container">
+        <input type="text" id="itemName" placeholder="Item Name" required>
+        <input type="number" id="advancePayment" placeholder="Advance Payment" required>
+        <input type="number" id="totalPayment" placeholder="Total Payment" required>
+        <button id="addItemButton">Add Item</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
