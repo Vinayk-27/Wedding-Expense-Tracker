@@ -1,4 +1,5 @@
-const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbxFCKVUNtw8XRC9GmbIg5ds8noNx34b36egATGIM4EOwl4rA8YMHg8F1-ZhRi1Z1vWk/exec'; // Use the proxy
+const googleSheetUrl = "https://script.google.com/macros/s/1j9vbOSeUo7GzF2rzQqIZpHLTzEwnqYgUqkr1S_uefHxO1E564WM1ymTP/exec";
+ // Use the proxy
 
 
 document.getElementById('addItemButton').addEventListener('click', addItem);
