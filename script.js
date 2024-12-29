@@ -1,4 +1,4 @@
-const googleSheetUrl = "https://script.google.com/macros/s/1j9vbOSeUo7GzF2rzQqIZpHLTzEwnqYgUqkr1S_uefHxO1E564WM1ymTP/exec";
+const googleSheetUrl = "https://script.google.com/macros/s/AKfycbxK0N91FUMP2Rbp5cSyhUvhpFlACbE_CzBWs-nNVPPssVmQHMxidos2AiN9oBaa7nUs/exec";
  // Use the proxy
 
 
